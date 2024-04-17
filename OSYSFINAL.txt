@@ -1,0 +1,88 @@
+#!/bin/bash
+
+# Create users
+users=("Michael" "Dwight" "Jim" "Phyllis" "Andy" "Stanley" "Pam" "Kevin" "Oscar" "Angela" "Meredith" "Creed" "Kelly" "Toby")
+for user in "${users[@]}"; do
+    if ! id "$user" &>/dev/null; then
+        sudo useradd "$user"
+        echo "User $user created successfully."
+    else
+        echo "User $user already exists."
+    fi
+done
+
+# Create groups
+groups=("manager" "accounting" "sales" "support" "hr")
+for group in "${groups[@]}"; do
+    if ! grep -q "^$group:" /etc/group; then
+        sudo groupadd "$group"
+        echo "Group $group created successfully."
+    else
+        echo "Group $group already exists."
+    fi
+done
+
+# Assign users to groups
+sudo usermod -aG manager Michael
+sudo usermod -aG sales Dwight
+sudo usermod -aG sales Jim
+sudo usermod -aG sales Phyllis
+sudo usermod -aG sales Andy
+sudo usermod -aG sales Stanley
+sudo usermod -aG accounting Kevin
+sudo usermod -aG accounting Oscar
+sudo usermod -aG accounting Angela
+sudo usermod -aG support Pam
+sudo usermod -aG support Meredith
+sudo usermod -aG support Creed
+sudo usermod -aG hr Kelly
+sudo usermod -aG hr Toby
+echo "Users assigned to groups."
+
+# Set up directory structure and permissions
+sudo mkdir -p /var/www/manager
+sudo mkdir -p /var/www/accounting
+sudo mkdir -p /var/www/sales
+sudo mkdir -p /var/www/support
+sudo mkdir -p /var/www/hr
+
+echo "Directories created."
+
+# Set ownership and permissions
+sudo chown :manager /var/www/manager
+sudo chown :accounting /var/www/accounting
+sudo chown :sales /var/www/sales
+sudo chown :support /var/www/support
+sudo chown :hr /var/www/hr
+
+sudo chmod 770 /var/www/manager
+sudo chmod 770 /var/www/accounting
+sudo chmod 770 /var/www/sales
+sudo chmod 770 /var/www/support
+sudo chmod 770 /var/www/hr
+
+echo "Ownership and permissions set."
+
+sudo chown -R michael:manager /var/www
+sudo chown -R toby:hr /var/www
+
+# Install Apache web server
+sudo apt update
+sudo apt install -y apache2
+
+# Start Apache web server
+sudo systemctl start apache2
+sudo systemctl enable apache2
+echo "Apache web server started and enabled."
+
+# Create web page
+echo "<html><head><title>Amazing Website</title></head><body><h1>Hello World!</h1><p>Max's amazing webpage!</p></body></html>" | sudo tee /var/www/html/index.html >/dev/null
+echo "Basic web page created successfully."
+
+# Install FTP server
+sudo apt install -y vsftpd
+
+# Start FTP server
+sudo systemctl start vsftpd
+sudo systemctl enable vsftpd
+echo "FTP server started and enabled."
