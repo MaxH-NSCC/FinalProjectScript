@@ -70,12 +70,6 @@ sudo chown -R Toby:hr /var/www
 sudo apt update
 sudo apt install -y apache2
 
-# Wait for Apache installation to finish before proceeding
-echo "Waiting for Apache installation to finish..."
-while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 ; do
-    sleep 1
-done
-
 # Start Apache web server
 sudo systemctl start apache2
 sudo systemctl enable apache2
@@ -87,12 +81,6 @@ echo "Basic web page created successfully."
 
 # Install FTP server
 sudo apt install -y vsftpd
-
-# Wait for FTP installation to finish before proceeding
-echo "Waiting for FTP installation to finish..."
-while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1 ; do
-    sleep 1
-done
 
 # Start FTP server
 sudo systemctl start vsftpd
